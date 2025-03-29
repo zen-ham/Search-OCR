@@ -1,6 +1,8 @@
 Digests all your image files into a pickle cluster with a fast searchengine GUI:
 =
 
+Open Source Week day 5 release!
+
 <p align="center">
     <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20151547.png" width="45%" />
     <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20135909.png" width="45%" />
