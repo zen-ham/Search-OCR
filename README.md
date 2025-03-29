@@ -2,12 +2,12 @@ Digests all your image files into a pickle cluster with a fast searchengine GUI:
 =
 
 <p align="center">
-    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assets/Screenshot 2025-03-29 151547.png" width="45%" />
-    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assets/Screenshot 2025-03-29 135909.png" width="45%" />
+    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20151547.png" width="45%" />
+    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20135909.png" width="45%" />
 </p>
 
 <p align="center">
-    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assets/Screenshot 2025-03-29 151512.png" style="width:100%;" />
+    <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20151512.png" style="width:100%;" />
 </p>
 
 ---
