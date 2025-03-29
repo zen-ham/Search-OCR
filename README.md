@@ -1,7 +1,7 @@
 Digests all your image files into a pickle cluster with a fast searchengine GUI:
 =
 
-Open Source Week day 5 release!
+[![GitHub](https://img.shields.io/badge/%20-Open Source Week-green?logo=opensourceinitiative)](https://github.com/your-repo) day 5 release!
 
 <p align="center">
     <img src="https://github.com/zen-ham/Search-OCR/blob/master/repo_assests/Screenshot%202025-03-29%20151547.png" width="45%" />
