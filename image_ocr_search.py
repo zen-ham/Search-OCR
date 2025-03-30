@@ -205,7 +205,7 @@ all_files = []
 for file_path, text_content in files_text.items():
     if text_content is not None:
         if text_content != '':
-            all_files.append((file_path, text_content))
+            all_files.append((file_path, text_content.lower()))
 
 splash.set_progress(100, 100, 'Creating gui...')
 
@@ -239,6 +239,8 @@ def search_results_TF_IDF(search, all_files, output_limit):
 
 def search_results_fuzzy_search(search, all_files, output_limit):
     results = []
+    
+    search = search.lower()
     
     def engine_atom(files):
         for file in files:
@@ -284,13 +286,13 @@ def search_engine(text_input):
         if img is not None:
             img = ensure_max_size(img, max_image_size, max_image_size)
             img = pil_to_data(img)
-            return (img, file_path)
+            return (img, f'{round(data[2], 2)} conf {data[0]}')
         else:
             return None
     
     tasks = [(load_atom, (data,)) for data in ranked_data]
     
-    images_text = zhmiscellany.processing.batch_multiprocess(tasks)
+    images_text = zhmiscellany.processing.batch_multiprocess(tasks, expect_crashes=True)
     images_text = [each for each in images_text if each is not None]
     
     image_read = zhmiscellany.misc.time_it('Reading images')
