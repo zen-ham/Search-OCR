@@ -410,11 +410,9 @@ from PyQt5.QtGui import QPixmap, QFont
 
 
 class SplashScreen(QSplashScreen):
-    """Custom splash screen with manually updated progress bar and status text"""
-    
     def __init__(self, app_name="Application", logo_path=None, width=400, height=320):
         super().__init__()
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        #self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setWindowFlag(Qt.FramelessWindowHint)
         
         # Create the content widget
@@ -523,3 +521,76 @@ def truncate_path(path, max_length):
     if len(path) <= max_length:
         return path
     return "..." + path[-(max_length - 3):]
+
+
+import cv2
+import pytesseract
+
+
+def analyze_text_probability(image_path):
+    try:
+
+        pil_img = image_path
+        img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+
+        if img is None:
+            return False
+
+        # 2. MSER (Maximally Stable Extremal Regions) text region detection
+        # Effective for detecting text regions in natural images
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Create MSER detector
+        mser = cv2.MSER_create()
+
+        # Detect regions
+        regions, _ = mser.detectRegions(gray)
+
+        # 3. Simple heuristic - check if image has enough variation
+        # Very uniform images (like blank pages) rarely contain text
+        std_dev = np.std(gray)
+        if std_dev < 10:  # Very uniform image
+            return False
+
+
+        # Count regions and check if they form text-like patterns
+        if len(regions) > 10:
+            # Filter for regions with text-like aspect ratios and sizes
+            text_like_regions = 0
+            for region in regions:
+                x, y, w, h = cv2.boundingRect(region)
+                aspect_ratio = w / float(h) if h > 0 else 0
+
+                # Text typically has certain aspect ratio ranges
+                if 0.1 < aspect_ratio < 10 and 5 < w < 300 and 5 < h < 100:
+                    text_like_regions += 1
+
+            # If we have enough text-like regions, it's likely text
+            if text_like_regions > 5:
+                return True
+
+
+        # 1. Fast approach - Use Tesseract's built-in text detection without full OCR
+        # This is much faster than full OCR and gives a confidence score
+        config = "--psm 11 --oem 3"  # Page segmentation mode 11: Sparse text, OEM 3: Default
+        data = pytesseract.image_to_data(pil_img, config=config, output_type=pytesseract.Output.DICT)
+
+        # Calculate confidence from Tesseract's detection phase
+        conf_values = [float(conf) for conf in data['conf'] if conf != '-1']
+        if conf_values:
+            avg_conf = sum(conf_values) / len(conf_values)
+            max_conf = max(conf_values) if conf_values else 0
+
+            # If we have high confidence values, return True immediately
+            if max_conf > 70:
+                return True
+
+            # If we have moderate confidence, it's likely text
+            if avg_conf > 50:
+                return True
+
+        return False
+
+    except Exception as e:
+        #print(f"Error processing {image_path}: {e}")
+        return False

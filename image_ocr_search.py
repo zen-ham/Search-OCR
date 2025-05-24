@@ -10,7 +10,7 @@ from utils import SplashScreen
 
 app = QApplication(sys.argv)
 
-splash = SplashScreen(app_name="Local OCR Indexer -\n- and Search Engine.\n\nDigesting Fresh Files...")
+splash = SplashScreen(app_name="Local OCR Indexer\nand Search Engine.\n\nDigesting Fresh Files...")
 splash.show()
 
 splash.set_progress(0, 100, 'Initilizing packages...')
@@ -18,19 +18,21 @@ print('Initilizing packages')
 import os
 os.environ['RAY_DEDUP_LOGS'] = '0'
 import zhmiscellany
-splash.set_progress(20, 100, 'Initilizing packages...')
 import time
 from collections import defaultdict
 import threading
 import random
 from PIL import Image
+import string
 
 import zhmiscellanyocr, humanize
+
+splash.set_progress(20, 100, 'Initilizing packages...')
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from utils import image_formats, load_image
+from utils import image_formats, load_image, analyze_text_probability
 
 from flask import Flask, render_template_string
 from io import BytesIO
@@ -50,7 +52,10 @@ def path_to_text_pipeline(path, index=1, group_index=1):
     img = load_image(path)
     if img is None:
         return
-    
+
+    #if not analyze_text_probability(img):
+    #    return (path, '')
+
     text = zhmiscellanyocr.ocr(img, config="--psm 11 --oem 3 -c preserve_interword_spaces=1")
     
     if index or total:
@@ -58,7 +63,7 @@ def path_to_text_pipeline(path, index=1, group_index=1):
     return (path, text)
 
 
-#splash.set_progress(0, 100, 'Waiting on ray to init...')
+splash.set_progress(30, 100, 'Waiting on ray to finish initialization...')
 
 print('Waiting on ray to init')
 from zhmiscellany._processing_supportfuncs import _ray_init_thread; _ray_init_thread.join()
@@ -66,7 +71,10 @@ print('Creating GFI')
 
 splash.set_progress(40, 100, 'Indexing fresh files...')
 
-files = zhmiscellany.fileio.list_files_recursive_cache_optimised_multiprocessed('C:\\', show_timings=True)
+files = []
+drives = [f"{d}:\\" for d in string.ascii_uppercase if os.path.exists(f"{d}:\\")]
+for drive in drives:
+    files.extend(zhmiscellany.fileio.list_files_recursive_cache_optimised_multiprocessed(drive, show_timings=True))
 
 splash.set_progress(60, 100, 'Filtering files...')
 
@@ -111,6 +119,9 @@ for key, value in list(format_paths.items()):
                         total += 1
 
 
+
+
+
 if task_files:
     
     splash.set_progress(90, 100, 'Creating tasks...')
@@ -142,7 +153,7 @@ if task_files:
                 eta = humanize.precisedelta((((time.time()-start_time)/index)*total)-(time.time()-start_time))
                 bsn='\n';print(f'{bsn*10}Completed:{bsn}{zhmiscellany.math.smart_percentage(index, total)}%{bsn}{index}/{total}{bsn}{group_index}/{total_groups}{bsn*2}Files\s:{bsn}{round(index/(time.time()-start_time), 2)}{bsn*2}ETA:{bsn}{eta}')
                 index = min(index, total-1)
-                splash.set_progress(self.peak_index, total, f'{truncate_path(task_files[index], 60)}\nETA: {eta}.')
+                splash.set_progress(self.peak_index, total, f'{truncate_path(task_files[index], 40)}\nETA: {eta}. {index}/{total}')
             else:
                 sys.__stdout__.write(data)  # Print normally
         
