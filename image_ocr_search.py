@@ -384,7 +384,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-port = random.randint(50000, 64000)
+port = 50179
 
 renderer_url = f'http://127.0.0.1:{port}'
 
