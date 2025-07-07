@@ -256,7 +256,7 @@ def search_results_fuzzy_search(search, all_files, output_limit):
     def engine_atom(files):
         for file in files:
             score = fuzz.partial_ratio(search, file[1])
-            if score > 70:
+            if score > 80:
                 results.append((*file, score))
         return results
     
